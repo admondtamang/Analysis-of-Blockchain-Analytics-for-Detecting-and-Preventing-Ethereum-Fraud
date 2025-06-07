@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fraud Detection Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label,
+        input {
+            display: block;
+            margin: 0.5em 0;
+        }
+
+        button {
+            margin-top: 1em;
+            padding: 0.5em 1em;
+        }
+
+        #result {
+            margin-top: 1em;
+            padding: 1em;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Fraud Detection Form</h2>
+
+    <form id="fraudForm">
+        <!-- Replace below with your actual feature names -->
+        <div id="formFields"></div>
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const features = [
+            "Feature1", "Feature2", "Feature3", "Feature4",
+            "Feature5", "Feature6", "Feature7", "Feature8",
+            "Feature9", "Feature10"
+        ];
+
+        const formFieldsDiv = document.getElementById('formFields');
+
+        // Dynamically create input fields
+        features.forEach(feature => {
+            const label = document.createElement('label');
+            label.textContent = feature;
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.name = feature;
+            input.step = 'any';
+            input.required = true;
+
+            formFieldsDiv.appendChild(label);
+            formFieldsDiv.appendChild(input);
+        });
+
+        // Form submission handler
+        document.getElementById('fraudForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((val, key) => {
+                data[key] = parseFloat(val);
+            });
+
+            try {
+                const res = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                document.getElementById('result').innerHTML = `
+        <strong>Prediction:</strong> ${result.prediction === 1 ? 'Fraud' : 'Not Fraud'}<br/>
+        <strong>Fraud Probability:</strong> ${result.prediction_proba_fraud}
+      `;
+            } catch (err) {
+                document.getElementById('result').innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+            }
+        });
+    </script>
+
+</body>
+
+</html>
