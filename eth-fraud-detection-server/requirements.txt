@@ -3,3 +3,4 @@ numpy
 pandas
 flask
 xgboost
+flask_cors

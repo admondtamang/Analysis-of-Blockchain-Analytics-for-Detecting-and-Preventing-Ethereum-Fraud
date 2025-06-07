@@ -2,101 +2,169 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Fraud Detection Interface</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ethereum Transaction Fraud Simulator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 2em;
-            max-width: 600px;
-            margin: auto;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 2rem;
+            color: #333;
         }
 
-        label,
-        input {
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
             display: block;
-            margin: 0.5em 0;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.25rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
-            margin-top: 1em;
-            padding: 0.5em 1em;
+            margin-top: 2rem;
+            padding: 0.75rem;
+            width: 100%;
+            background-color: #2980b9;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        #result {
-            margin-top: 1em;
-            padding: 1em;
-            border: 1px solid #ccc;
+        button:hover {
+            background-color: #1f618d;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .disclaimer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
         }
     </style>
 </head>
 
 <body>
+    <div class="container">
+        <h1>Ethereum Transaction Fraud Simulator</h1>
+        <p><em>Based on ML Model Insights from Thesis Research</em></p>
 
-    <h2>Fraud Detection Form</h2>
+        <form id="fraudForm">
+            <label>Account Lifespan (Minutes):
+                <input type="number" step="0.01" id="lifespan" required>
+            </label>
 
-    <form id="fraudForm">
-        <!-- Replace below with your actual feature names -->
-        <div id="formFields"></div>
-        <button type="submit">Predict</button>
-    </form>
+            <label>Total Ether Received by Account:
+                <input type="number" step="0.00001" id="ether_received" required>
+            </label>
 
-    <div id="result"></div>
+            <label>Average Value of Ether Sent per Transaction:
+                <input type="number" step="0.00001" id="avg_val_sent" required>
+            </label>
+
+            <label>Average Minutes Between Sent Transactions:
+                <input type="number" step="0.01" id="avg_min_between" required>
+            </label>
+
+            <label>Number of Smart Contracts Created by Account:
+                <input type="number" id="contracts_created" required>
+            </label>
+
+            <button type="submit">Analyze Transaction</button>
+        </form>
+
+        <div class="result" id="result" style="display: none;">
+            <h2>Analysis Result</h2>
+            <p><strong>Status:</strong> <span id="status"></span></p>
+            <p><strong>Simulated Confidence:</strong> <span id="confidence"></span></p>
+        </div>
+
+        <div class="disclaimer">
+            <p>Disclaimer: This is a simplified simulation based on research findings and not a real-time fraud
+                detection tool. Model parameters are illustrative.</p>
+        </div>
+
+        <footer>
+            Ethereum Fraud Detection Simulator v1.0<br>
+            Based on insights from "Analysis of Blockchain Analytics for Detecting and Preventing Ethereum Fraud" by
+            Admond Tamang.
+        </footer>
+    </div>
 
     <script>
-        const features = [
-            "Feature1", "Feature2", "Feature3", "Feature4",
-            "Feature5", "Feature6", "Feature7", "Feature8",
-            "Feature9", "Feature10"
-        ];
+        const form = document.getElementById('fraudForm');
+        const resultDiv = document.getElementById('result');
+        const statusSpan = document.getElementById('status');
+        const confidenceSpan = document.getElementById('confidence');
 
-        const formFieldsDiv = document.getElementById('formFields');
-
-        // Dynamically create input fields
-        features.forEach(feature => {
-            const label = document.createElement('label');
-            label.textContent = feature;
-
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.name = feature;
-            input.step = 'any';
-            input.required = true;
-
-            formFieldsDiv.appendChild(label);
-            formFieldsDiv.appendChild(input);
-        });
-
-        // Form submission handler
-        document.getElementById('fraudForm').addEventListener('submit', async (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const formData = new FormData(e.target);
-            const data = {};
-            formData.forEach((val, key) => {
-                data[key] = parseFloat(val);
-            });
+            const data = {
+                "Time Diff between first and last (Mins)": parseFloat(document.getElementById('lifespan').value),
+                "total ether received": parseFloat(document.getElementById('ether_received').value),
+                "avg val sent": parseFloat(document.getElementById('avg_val_sent').value),
+                "Avg min between sent tnx": parseFloat(document.getElementById('avg_min_between').value),
+                "Number of Created Contracts": parseInt(document.getElementById('contracts_created').value)
+            };
 
             try {
-                const res = await fetch('http://127.0.0.1:5000/predict', {
+                const res = await fetch('http://localhost:5000/predict', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                const result = await res.json();
-                document.getElementById('result').innerHTML = `
-        <strong>Prediction:</strong> ${result.prediction === 1 ? 'Fraud' : 'Not Fraud'}<br/>
-        <strong>Fraud Probability:</strong> ${result.prediction_proba_fraud}
-      `;
+                const response = await res.json();
+                if (response.error) throw new Error(response.error);
+
+                const status = response.prediction === 1 ? 'Fraudulent' : 'Legitimate';
+                statusSpan.textContent = status;
+                confidenceSpan.textContent = (response.prediction_proba_fraud * 100).toFixed(2) + "%";
+
+                resultDiv.style.display = 'block';
             } catch (err) {
-                document.getElementById('result').innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+                alert('Prediction failed: ' + err.message);
+                resultDiv.style.display = 'none';
             }
         });
     </script>
-
 </body>
 
 </html>
