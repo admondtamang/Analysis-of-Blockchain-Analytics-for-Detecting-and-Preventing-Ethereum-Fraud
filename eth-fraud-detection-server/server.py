@@ -7,15 +7,15 @@ import numpy as np
 app = Flask(__name__)
 
 # Load saved model and preprocessing assets
-# try:
-#     model = joblib.load('xgboost_model.pkl')
-#     scaler = joblib.load('scaler.pkl')
-#     X_train_columns = joblib.load('feature_columns.pkl')
-#     zero_var_cols = joblib.load('zero_variance_cols.pkl')  # Optional, can be an empty list
-#     print("Model and preprocessing assets loaded successfully.")
-# except Exception as e:
-#     print(f"Error loading model or preprocessing assets: {e}")
-#     exit()
+try:
+    model = joblib.load('xgboost_model.pkl')
+    scaler = joblib.load('scaler.pkl')
+    X_train_columns = joblib.load('feature_columns.pkl')
+    zero_var_cols = joblib.load('zero_variance_cols.pkl')  # Optional, can be an empty list
+    print("Model and preprocessing assets loaded successfully.")
+except Exception as e:
+    print(f"Error loading model or preprocessing assets: {e}")
+    exit()
 
 
 @app.route('/', methods=['GET'])
@@ -68,4 +68,4 @@ def predict():
 if __name__ == '__main__':
     # Run with: python flask_server.py
     # For production: use Gunicorn or similar
-    app.run(debug=True, host='0.0.0.0', port=6000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
