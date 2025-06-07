@@ -3,4 +3,5 @@ numpy
 pandas
 flask
 xgboost
+scikit-learn
 flask_cors
