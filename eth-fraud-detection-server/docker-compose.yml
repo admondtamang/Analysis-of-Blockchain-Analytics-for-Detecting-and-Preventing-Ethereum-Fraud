@@ -3,7 +3,7 @@ networks:
     external: true
 
 services:
-  fraud-simulator:
+  thesis:
     image: "ml-webapp"
     ports:
       - "5000:5000"
@@ -12,7 +12,7 @@ services:
       - app
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.web.loadbalancer.server.port=5000"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=production"
-      - "traefik.http.routers.web.rule=Host(`thesis.admondtamang.com.np`)"
+      - "traefik.http.services.thesis.loadbalancer.server.port=5000"
+      - "traefik.http.routers.thesis.entrypoints=websecure"
+      - "traefik.http.routers.thesis.tls.certresolver=production"
+      - "traefik.http.routers.thesis.rule=Host(`thesis.admondtamang.com.np`)"
