@@ -1,0 +1,21 @@
+networks:
+  app:
+    external: true
+
+services:
+  fraud-simulator:
+    build: .
+    container_name: fraud_simulator_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    networks:
+      - app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.web.loadbalancer.server.port=5000"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=production"
+      - "traefik.http.routers.web.rule=Host(`efraud.admondtamang.com.np`)"
